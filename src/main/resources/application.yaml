@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: catalog-manager
+  sql:
+    init:
+      mode: always
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/catalogs
+    username: jokindy
+    password: iamroot
+  liquibase:
+    change-log: db/changelog/db-changelog-master.yaml
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
