@@ -36,9 +36,9 @@ public class CategoryController {
     return ResponseEntity.ok(categoryService.addCategory(categoryCreateDto));
   }
 
-  @PutMapping("/{id}")
+  @PutMapping
   public ResponseEntity<CategoryViewDto> updateCategory(
-  @Valid @RequestBody CategoryUpdateDto categoryUpdateDto) {
+      @Valid @RequestBody CategoryUpdateDto categoryUpdateDto) {
     return ResponseEntity.ok(categoryService.updateCategory(categoryUpdateDto));
   }
 

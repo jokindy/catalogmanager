@@ -2,9 +2,18 @@ package com.example.catalogmanager.dto.category;
 
 public class CategoryViewDto {
 
+  private Long id;
   private String name;
   private String description;
   private String logoUrl;
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public String getName() {
     return name;
