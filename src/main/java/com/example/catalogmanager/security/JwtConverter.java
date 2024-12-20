@@ -1,5 +1,7 @@
 package com.example.catalogmanager.security;
 
+import static java.util.Objects.isNull;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -51,21 +53,18 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
 
   @SuppressWarnings("unchecked")
   private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
-    Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
+    Map<String, Object> resourceAccess = jwt.getClaim("realm_access");
     log.debug("Resource access: {}", resourceAccess);
 
-    Map<String, Object> resource;
-    Collection<String> resourceRoles;
-
-    if (resourceAccess == null
-        || (resource = (Map<String, Object>) resourceAccess.get(properties.getResourceId())) == null
-        || (resourceRoles = (Collection<String>) resource.get("roles")) == null) {
+    if (isNull(resourceAccess) || isNull(resourceAccess.get("roles"))) {
       return Set.of();
     }
 
-    log.debug("Roles for resource {}: {}", properties.getResourceId(), resourceRoles);
+    Collection<String> roles = (Collection<String>) resourceAccess.get("roles");
 
-    return resourceRoles.stream()
+    log.debug("Roles for resource {}: {}", properties.getResourceId(), roles);
+
+    return roles.stream()
         .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
         .collect(Collectors.toSet());
   }

@@ -113,7 +113,6 @@ class ProductUserControllerTest extends ProductAbstractControllerTest {
                 containsInAnyOrder("GET /api/v1/categories", "GET /api/v1/categories")));
   }
 
-
   private Page<Category> getCategoriesPage() {
     Category category1 = new Category();
     category1.setId(1L);

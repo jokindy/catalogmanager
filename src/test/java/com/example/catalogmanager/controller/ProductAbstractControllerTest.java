@@ -11,9 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 // @TestPropertySource(locations = "classpath:application-test.yml")
 public class ProductAbstractControllerTest {
-    @Autowired
-    protected MockMvc mockMvc;
+  @Autowired protected MockMvc mockMvc;
 
-    @MockBean
-    protected CategoryRepository categoryRepository;
+  @MockBean protected CategoryRepository categoryRepository;
 }
