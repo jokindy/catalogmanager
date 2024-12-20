@@ -24,7 +24,6 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
 
   private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter =
       new JwtGrantedAuthoritiesConverter();
-
   private final JwtConverterProperties properties;
   private final Logger log = LoggerFactory.getLogger(JwtConverter.class);
 

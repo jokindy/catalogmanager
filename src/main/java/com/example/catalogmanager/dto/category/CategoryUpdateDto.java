@@ -1,10 +1,23 @@
 package com.example.catalogmanager.dto.category;
 
-public class CategoryUpdateDto {
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.URL;
 
-  private Long id;
+public class CategoryUpdateDto {
+  @NotNull private Long id;
+
+  @NotNull
+  @Size(min = 3, max = 85)
   private String name;
+
+  @NotNull
+  @Size(min = 3, max = 255)
   private String description;
+
+  @NotNull
+  @Size(min = 3, max = 255)
+  @URL
   private String logoUrl;
 
   public Long getId() {

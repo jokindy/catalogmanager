@@ -10,7 +10,5 @@ public abstract class CategoryMapper {
 
   public abstract CategoryViewDto toDto(Category category);
 
-  public abstract Category toEntity(CategoryViewDto categoryViewDto);
-
   public abstract Category toEntity(CategoryCreateDto categoryCreateDto);
 }

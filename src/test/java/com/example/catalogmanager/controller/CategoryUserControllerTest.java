@@ -8,21 +8,32 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.catalogmanager.domain.Category;
+import com.example.catalogmanager.repository.CategoryRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
 
-class ProductUserControllerTest extends ProductAbstractControllerTest {
+@SpringBootTest
+@AutoConfigureMockMvc(addFilters = false)
+class CategoryControllerTest {
+
+  @Autowired private MockMvc mockMvc;
+
+  @MockBean private CategoryRepository categoryRepository;
 
   @Test
-  @WithMockUser(username = "testuser")
-  void testGetBookById_then200() throws Exception {
+  void testGetCategoryById_Success() throws Exception {
     Category category = new Category();
     category.setName("Test category");
     category.setDescription("Test description");
@@ -41,18 +52,18 @@ class ProductUserControllerTest extends ProductAbstractControllerTest {
 
   @Test
   @WithMockUser(username = "testuser")
-  void testGetBookByNonExistId_404() throws Exception {
+  void testGetCategoryByNonExistentId_404() throws Exception {
     mockMvc
         .perform(get("/api/v1/categories/1"))
         .andExpectAll(
             status().isNotFound(),
-            jsonPath("$.message").value("Entity didn't found"),
+            jsonPath("$.message").value("Entity not found"),
             jsonPath("$.operation").value("GET /api/v1/categories/1"));
   }
 
   @Test
   @WithMockUser(username = "testuser")
-  void testGetBookByInvalidId_400() throws Exception {
+  void testGetCategoryByInvalidId_400() throws Exception {
     mockMvc
         .perform(get("/api/v1/categories/AA"))
         .andExpectAll(
@@ -64,8 +75,8 @@ class ProductUserControllerTest extends ProductAbstractControllerTest {
 
   @Test
   @WithMockUser(username = "testuser")
-  void testGetAllBooks_200() throws Exception {
-    Mockito.when(categoryRepository.findAll(any(Pageable.class))).thenReturn(getCategoriesPage());
+  void testGetAllCategories_Success() throws Exception {
+    Mockito.when(categoryRepository.findAll(any(Pageable.class))).thenReturn(createCategoryPage());
 
     mockMvc
         .perform(get("/api/v1/categories"))
@@ -88,7 +99,7 @@ class ProductUserControllerTest extends ProductAbstractControllerTest {
 
   @Test
   @WithMockUser(username = "testuser")
-  void testGetAllBooks_EmptyList200() throws Exception {
+  void testGetAllCategories_EmptyList() throws Exception {
     Mockito.when(categoryRepository.findAll(any(Pageable.class)))
         .thenReturn(new PageImpl<>(new ArrayList<>()));
 
@@ -99,7 +110,7 @@ class ProductUserControllerTest extends ProductAbstractControllerTest {
 
   @Test
   @WithMockUser(username = "testuser")
-  void testGetAllBooks_InvalidRequestParams() throws Exception {
+  void testGetAllCategories_InvalidRequestParams() throws Exception {
     mockMvc
         .perform(get("/api/v1/categories").param("pageSize", "-2").param("pageNumber", "-9"))
         .andExpectAll(
@@ -113,7 +124,7 @@ class ProductUserControllerTest extends ProductAbstractControllerTest {
                 containsInAnyOrder("GET /api/v1/categories", "GET /api/v1/categories")));
   }
 
-  private Page<Category> getCategoriesPage() {
+  private Page<Category> createCategoryPage() {
     Category category1 = new Category();
     category1.setId(1L);
     category1.setName("Category 1");
