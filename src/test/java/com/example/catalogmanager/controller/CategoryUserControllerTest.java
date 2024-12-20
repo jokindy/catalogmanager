@@ -21,12 +21,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-class CategoryControllerTest {
+@TestPropertySource(locations = "/application-test.yml")
+class CategoryUserControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
@@ -51,7 +52,6 @@ class CategoryControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "testuser")
   void testGetCategoryByNonExistentId_404() throws Exception {
     mockMvc
         .perform(get("/api/v1/categories/1"))
@@ -62,7 +62,6 @@ class CategoryControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "testuser")
   void testGetCategoryByInvalidId_400() throws Exception {
     mockMvc
         .perform(get("/api/v1/categories/AA"))
@@ -74,7 +73,6 @@ class CategoryControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "testuser")
   void testGetAllCategories_Success() throws Exception {
     Mockito.when(categoryRepository.findAll(any(Pageable.class))).thenReturn(createCategoryPage());
 
@@ -98,7 +96,6 @@ class CategoryControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "testuser")
   void testGetAllCategories_EmptyList() throws Exception {
     Mockito.when(categoryRepository.findAll(any(Pageable.class)))
         .thenReturn(new PageImpl<>(new ArrayList<>()));
@@ -109,7 +106,6 @@ class CategoryControllerTest {
   }
 
   @Test
-  @WithMockUser(username = "testuser")
   void testGetAllCategories_InvalidRequestParams() throws Exception {
     mockMvc
         .perform(get("/api/v1/categories").param("pageSize", "-2").param("pageNumber", "-9"))
