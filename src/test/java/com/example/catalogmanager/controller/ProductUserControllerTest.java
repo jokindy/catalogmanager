@@ -1,17 +1,15 @@
 package com.example.catalogmanager.controller;
 
+import static com.example.catalogmanager.util.ProductFactory.*;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.example.catalogmanager.domain.Category;
 import com.example.catalogmanager.domain.Product;
 import com.example.catalogmanager.repository.ProductRepository;
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.TestPropertySource;
@@ -29,12 +26,13 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource(locations = "/application-test.yml")
 public class ProductUserControllerTest {
+
   @Autowired private MockMvc mockMvc;
 
   @MockBean private ProductRepository productRepository;
 
   @Test
-  void testGetCategoryById_Success() throws Exception {
+  void testGetProductById_Success() throws Exception {
     Product product = createProduct();
 
     Mockito.when(productRepository.findById(1L)).thenReturn(Optional.of(product));
@@ -52,7 +50,7 @@ public class ProductUserControllerTest {
   }
 
   @Test
-  void testGetCategoryByNonExistentId_404() throws Exception {
+  void testGetProductByNonExistentId_404() throws Exception {
     mockMvc
         .perform(get("/api/v1/products/1"))
         .andExpectAll(
@@ -62,7 +60,7 @@ public class ProductUserControllerTest {
   }
 
   @Test
-  void testGetCategoryByInvalidId_400() throws Exception {
+  void testGetProductByInvalidId_400() throws Exception {
     mockMvc
         .perform(get("/api/v1/products/AA"))
         .andExpectAll(
@@ -73,7 +71,7 @@ public class ProductUserControllerTest {
   }
 
   @Test
-  void testGetAllCategories_Success() throws Exception {
+  void testGetAllProducts_Success() throws Exception {
     Mockito.when(productRepository.findAll(any(Pageable.class))).thenReturn(createProductsPage());
 
     mockMvc
@@ -103,7 +101,55 @@ public class ProductUserControllerTest {
   }
 
   @Test
-  void testGetAllCategories_EmptyList() throws Exception {
+  void testSearchProductsByName_Success() throws Exception {
+    Mockito.when(productRepository.findByName(any(), any(Pageable.class)))
+        .thenReturn(createSameNameProductsPage());
+
+    mockMvc
+        .perform(get("/api/v1/products/search").param("name", "Test product name 1"))
+        .andExpectAll(status().isOk(), jsonPath("$", hasSize(2)))
+        .andExpectAll(
+            jsonPath("$[0].name", is("Test product name 1")),
+            jsonPath("$[0].description", is("Test product description 1")),
+            jsonPath("$[0].price", is(9.99)),
+            jsonPath("$[0].stockQuantity", is(30)),
+            jsonPath("$[0].category.name", is("Category 2")),
+            jsonPath("$[0].category.description", is("Description for category 2")))
+        .andExpectAll(
+            jsonPath("$[1].name", is("Test product name 1")),
+            jsonPath("$[1].description", is("Test product description 2")),
+            jsonPath("$[1].price", is(19.99)),
+            jsonPath("$[1].stockQuantity", is(40)),
+            jsonPath("$[1].category.name", is("Category 3")),
+            jsonPath("$[1].category.description", is("Description for category 3")));
+  }
+
+  @Test
+  void testSearchProductsByCategoryName_Success() throws Exception {
+    Mockito.when(productRepository.findProductsByCategory_Name(any(), any(Pageable.class)))
+        .thenReturn(createSameCategoryProductsPage());
+
+    mockMvc
+        .perform(get("/api/v1/products/category").param("categoryName", "Category 1"))
+        .andExpectAll(status().isOk(), jsonPath("$", hasSize(2)))
+        .andExpectAll(
+            jsonPath("$[0].name", is("Test product name 1")),
+            jsonPath("$[0].description", is("Test product description 1")),
+            jsonPath("$[0].price", is(9.99)),
+            jsonPath("$[0].stockQuantity", is(30)),
+            jsonPath("$[0].category.name", is("Category 1")),
+            jsonPath("$[0].category.description", is("Description for category 1")))
+        .andExpectAll(
+            jsonPath("$[1].name", is("Test product name 2")),
+            jsonPath("$[1].description", is("Test product description 2")),
+            jsonPath("$[1].price", is(19.99)),
+            jsonPath("$[1].stockQuantity", is(40)),
+            jsonPath("$[1].category.name", is("Category 1")),
+            jsonPath("$[1].category.description", is("Description for category 1")));
+  }
+
+  @Test
+  void testGetAllProducts_EmptyList() throws Exception {
     Mockito.when(productRepository.findAll(any(Pageable.class)))
         .thenReturn(new PageImpl<>(new ArrayList<>()));
 
@@ -113,7 +159,7 @@ public class ProductUserControllerTest {
   }
 
   @Test
-  void testGetAllCategories_InvalidRequestParams() throws Exception {
+  void testGetAllProducts_InvalidRequestParams() throws Exception {
     mockMvc
         .perform(get("/api/v1/products").param("pageSize", "-2").param("pageNumber", "-9"))
         .andExpectAll(
@@ -125,59 +171,5 @@ public class ProductUserControllerTest {
             jsonPath(
                 "$[*].operation",
                 containsInAnyOrder("GET /api/v1/products", "GET /api/v1/products")));
-  }
-
-  private Page<Product> createProductsPage() {
-    Product product1 = new Product();
-    product1.setId(1L);
-    product1.setName("Test product name 1");
-    product1.setDescription("Test product description 1");
-    product1.setPrice(BigDecimal.valueOf(9.99));
-    product1.setStockQuantity(30);
-
-    Product product2 = new Product();
-    product2.setId(2L);
-    product2.setName("Test product name 2");
-    product2.setDescription("Test product description 2");
-    product2.setPrice(BigDecimal.valueOf(19.99));
-    product2.setStockQuantity(40);
-
-    Product product3 = new Product();
-    product3.setId(3L);
-    product3.setName("Test product name 3");
-    product3.setDescription("Test product description 3");
-    product3.setPrice(BigDecimal.valueOf(29.99));
-    product3.setStockQuantity(50);
-
-    Category category2 = new Category();
-    category2.setName("Category 2");
-    category2.setDescription("Description for category 2");
-
-    Category category3 = new Category();
-    category3.setName("Category 3");
-    category3.setDescription("Description for category 3");
-
-    product1.setCategory(category2);
-    product2.setCategory(category3);
-    product3.setCategory(category2);
-
-    return new PageImpl<>(List.of(product1, product2, product3));
-  }
-
-  private Product createProduct() {
-    Product product = new Product();
-    product.setName("Test product name");
-    product.setDescription("Test product description");
-    product.setPrice(BigDecimal.valueOf(9.99));
-    product.setStockQuantity(30);
-
-    Category category = new Category();
-
-    category.setName("Test category name");
-    category.setDescription("Test category description");
-
-    product.setCategory(category);
-
-    return product;
   }
 }

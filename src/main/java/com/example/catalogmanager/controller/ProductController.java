@@ -5,8 +5,7 @@ import com.example.catalogmanager.dto.product.ProductUpdateDto;
 import com.example.catalogmanager.dto.product.ProductViewDto;
 import com.example.catalogmanager.service.ProductService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -39,15 +38,14 @@ public class ProductController {
 
   @GetMapping("/search")
   public ResponseEntity<List<ProductViewDto>> searchProducts(
-      @RequestParam String name,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
+      @NotEmpty @Size(min = 3, max = 85) @RequestParam String name,
+      @PositiveOrZero @RequestParam(defaultValue = "0") int page,
+      @Positive @RequestParam(defaultValue = "10") int size) {
     List<ProductViewDto> products = productService.searchProductsByName(name, page, size);
     return ResponseEntity.ok(products);
   }
 
   @PostMapping
-  // @PreAuthorize("hasRole('EDITOR')")
   public ResponseEntity<ProductViewDto> createProduct(
       @Valid @RequestBody ProductCreateDto productCreateDto) {
     ProductViewDto createdProduct = productService.createProduct(productCreateDto);
@@ -55,7 +53,6 @@ public class ProductController {
   }
 
   @PutMapping
-  // @PreAuthorize("hasRole('EDITOR')")
   public ResponseEntity<ProductViewDto> updateProduct(
       @Valid @RequestBody ProductUpdateDto productUpdateDto) {
     ProductViewDto updatedProduct = productService.updateProduct(productUpdateDto);
@@ -63,7 +60,6 @@ public class ProductController {
   }
 
   @DeleteMapping("/{id}")
-  // @PreAuthorize("hasRole('EDITOR')")
   public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
     productService.deleteProduct(id);
     return ResponseEntity.noContent().build();
@@ -71,9 +67,9 @@ public class ProductController {
 
   @GetMapping("/category")
   public ResponseEntity<List<ProductViewDto>> getProductsByCategoryName(
-      @RequestParam String categoryName,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "10") int size) {
+      @NotEmpty @Size(min = 3, max = 85) @RequestParam String categoryName,
+      @PositiveOrZero @RequestParam(defaultValue = "0") int page,
+      @Positive @RequestParam(defaultValue = "10") int size) {
     List<ProductViewDto> products =
         productService.getProductsByCategoryName(categoryName, page, size);
     return ResponseEntity.ok(products);
