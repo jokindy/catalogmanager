@@ -5,10 +5,14 @@ import com.example.catalogmanager.dto.category.CategoryUpdateDto;
 import com.example.catalogmanager.dto.category.CategoryViewDto;
 import com.example.catalogmanager.service.CategoryService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/categories")
 public class CategoryController {
@@ -21,8 +25,9 @@ public class CategoryController {
 
   @GetMapping
   public ResponseEntity<List<CategoryViewDto>> getAllCategories(
-      @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-    return ResponseEntity.ok(categoryService.getAllCategories(page, size));
+      @PositiveOrZero @RequestParam(defaultValue = "0") int pageNumber,
+      @Positive @RequestParam(defaultValue = "10") int pageSize) {
+    return ResponseEntity.ok(categoryService.getAllCategories(pageNumber, pageSize));
   }
 
   @GetMapping("/{id}")

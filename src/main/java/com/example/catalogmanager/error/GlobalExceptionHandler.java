@@ -2,8 +2,12 @@ package com.example.catalogmanager.error;
 
 import com.example.catalogmanager.error.exception.GeneralException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +23,7 @@ public class GlobalExceptionHandler {
 
   Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
   @Autowired HttpServletRequest request;
+  private static final String INVALID_PARAMETER_TEMPLATE = "Invalid parameter: %s";
 
   @ExceptionHandler
   public ResponseEntity<ErrorDto> handleGenericException(GeneralException exception) {
@@ -32,7 +37,7 @@ public class GlobalExceptionHandler {
   public ResponseEntity<List<ErrorDto>> handleMethodArgumentNotValidException(
       MethodArgumentNotValidException exception) {
     logger.error(exception.getMessage(), exception);
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getErrors(exception));
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(handleFieldErrors(exception));
   }
 
   @ExceptionHandler
@@ -42,12 +47,22 @@ public class GlobalExceptionHandler {
     ErrorDto error =
         new ErrorDto(
             HttpStatus.BAD_REQUEST.value(),
-            "Invalid parameter: %s".formatted(exception.getPropertyName()),
+            INVALID_PARAMETER_TEMPLATE.formatted(exception.getPropertyName()),
             getOperationName(request));
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(List.of(error));
   }
 
-  private List<ErrorDto> getErrors(MethodArgumentNotValidException exception) {
+  @ExceptionHandler
+  public ResponseEntity<List<ErrorDto>> handleConstraintViolationException(
+      ConstraintViolationException exception) {
+    logger.error(exception.getMessage(), exception);
+    String operationName = getOperationName(request);
+
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        .body(handleConstraintViolations(exception.getConstraintViolations(), operationName));
+  }
+
+  private List<ErrorDto> handleFieldErrors(MethodArgumentNotValidException exception) {
     String operationName = getOperationName(request);
 
     List<ErrorDto> errors = new ArrayList<>();
@@ -59,12 +74,34 @@ public class GlobalExceptionHandler {
                 errors.add(
                     new ErrorDto(
                         HttpStatus.BAD_REQUEST.value(),
-                        "Invalid parameter: %s".formatted(fieldError.getField()),
+                        INVALID_PARAMETER_TEMPLATE.formatted(fieldError.getField()),
                         operationName)));
+    return errors;
+  }
+
+  private List<ErrorDto> handleConstraintViolations(
+      Set<ConstraintViolation<?>> constraintViolations, String operationName) {
+    List<ErrorDto> errors = new ArrayList<>();
+
+    constraintViolations.forEach(
+        violation ->
+            errors.add(
+                new ErrorDto(
+                    HttpStatus.BAD_REQUEST.value(),
+                    INVALID_PARAMETER_TEMPLATE.formatted(
+                        getInvalidParameter(violation.getPropertyPath())),
+                    operationName)));
+
     return errors;
   }
 
   private String getOperationName(HttpServletRequest request) {
     return request.getMethod() + " " + request.getRequestURI();
+  }
+
+  private String getInvalidParameter(Path propertyPath) {
+
+    String[] pathParts = propertyPath.toString().split("\\.");
+    return pathParts[pathParts.length - 1];
   }
 }

@@ -5,6 +5,8 @@ import com.example.catalogmanager.dto.product.ProductUpdateDto;
 import com.example.catalogmanager.dto.product.ProductViewDto;
 import com.example.catalogmanager.service.ProductService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +23,8 @@ public class ProductController {
 
   @GetMapping
   public ResponseEntity<List<ProductViewDto>> getAllProducts(
-      @RequestParam(defaultValue = "0") int pageNumber,
-      @RequestParam(defaultValue = "10") int pageSize) {
+      @PositiveOrZero @RequestParam(defaultValue = "0") int pageNumber,
+      @Positive @RequestParam(defaultValue = "10") int pageSize) {
     List<ProductViewDto> products = productService.getAllProducts(pageNumber, pageSize);
     return ResponseEntity.ok(products);
   }
