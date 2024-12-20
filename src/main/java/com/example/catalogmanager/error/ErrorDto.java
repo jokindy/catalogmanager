@@ -1,49 +1,31 @@
 package com.example.catalogmanager.error;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 
+@JsonPropertyOrder({"timestamp", "traceId", "faults"})
 public class ErrorDto {
-  private int status;
-  private String message;
-  private String operation;
-  private LocalDateTime timestamp;
+  private final String traceId;
+  private final LocalDateTime timestamp;
+  private final List<FaultDto> faults;
 
-  public ErrorDto(int status, String message, String operation) {
-    this.status = status;
-    this.message = message;
-    this.operation = operation;
+  public ErrorDto(List<FaultDto> faults) {
+    this.traceId = UUID.randomUUID().toString();
     this.timestamp = LocalDateTime.now();
+    this.faults = faults;
   }
 
-  public int getStatus() {
-    return status;
-  }
-
-  public void setStatus(int status) {
-    this.status = status;
-  }
-
-  public String getMessage() {
-    return message;
-  }
-
-  public void setMessage(String message) {
-    this.message = message;
-  }
-
-  public String getOperation() {
-    return operation;
-  }
-
-  public void setOperation(String operation) {
-    this.operation = operation;
+  public String getTraceId() {
+    return traceId;
   }
 
   public LocalDateTime getTimestamp() {
     return timestamp;
   }
 
-  public void setTimestamp(LocalDateTime timestamp) {
-    this.timestamp = timestamp;
+  public List<FaultDto> getFaults() {
+    return faults;
   }
 }

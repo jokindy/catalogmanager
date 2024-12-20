@@ -5,19 +5,21 @@ import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.URL;
 
 public class CategoryUpdateDto {
-  @NotNull private Long id;
 
-  @NotNull
-  @Size(min = 3, max = 85)
+  @NotNull(message = "Must not me null")
+  private Long id;
+
+  @NotNull(message = "Must not me null")
+  @Size(min = 3, max = 85, message = "Must be between 3 and 85 characters")
   private String name;
 
-  @NotNull
-  @Size(min = 3, max = 255)
+  @NotNull(message = "Must not me null")
+  @Size(min = 3, max = 85, message = "Must be between 3 and 255 characters")
   private String description;
 
-  @NotNull
-  @Size(min = 3, max = 255)
-  @URL
+  @NotNull(message = "Must not me null")
+  @Size(min = 3, max = 85, message = "Must be between 3 and 85 characters")
+  @URL(message = "Must be a valid url")
   private String logoUrl;
 
   public Long getId() {

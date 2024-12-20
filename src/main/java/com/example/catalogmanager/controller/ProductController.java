@@ -24,8 +24,11 @@ public class ProductController {
 
   @GetMapping
   public ResponseEntity<List<ProductViewDto>> getAllProducts(
-      @PositiveOrZero @RequestParam(defaultValue = "0") int pageNumber,
-      @Positive @RequestParam(defaultValue = "10") int pageSize) {
+      @PositiveOrZero(message = "Must be greater than or equal to 0")
+          @RequestParam(defaultValue = "0")
+          int pageNumber,
+      @Positive(message = "Must be greater than 0") @RequestParam(defaultValue = "10")
+          int pageSize) {
     List<ProductViewDto> products = productService.getAllProducts(pageNumber, pageSize);
     return ResponseEntity.ok(products);
   }
@@ -39,9 +42,12 @@ public class ProductController {
   @GetMapping("/search")
   public ResponseEntity<List<ProductViewDto>> searchProducts(
       @NotEmpty @Size(min = 3, max = 85) @RequestParam String name,
-      @PositiveOrZero @RequestParam(defaultValue = "0") int page,
-      @Positive @RequestParam(defaultValue = "10") int size) {
-    List<ProductViewDto> products = productService.searchProductsByName(name, page, size);
+      @PositiveOrZero(message = "Must be greater than or equal to 0")
+          @RequestParam(defaultValue = "0")
+          int pageNumber,
+      @Positive(message = "Must be greater than 0") @RequestParam(defaultValue = "10")
+          int pageSize) {
+    List<ProductViewDto> products = productService.searchProductsByName(name, pageNumber, pageSize);
     return ResponseEntity.ok(products);
   }
 
@@ -68,10 +74,13 @@ public class ProductController {
   @GetMapping("/category")
   public ResponseEntity<List<ProductViewDto>> getProductsByCategoryName(
       @NotEmpty @Size(min = 3, max = 85) @RequestParam String categoryName,
-      @PositiveOrZero @RequestParam(defaultValue = "0") int page,
-      @Positive @RequestParam(defaultValue = "10") int size) {
+      @PositiveOrZero(message = "Must be greater than or equal to 0")
+          @RequestParam(defaultValue = "0")
+          int pageNumber,
+      @Positive(message = "Must be greater than 0") @RequestParam(defaultValue = "10")
+          int pageSize) {
     List<ProductViewDto> products =
-        productService.getProductsByCategoryName(categoryName, page, size);
+        productService.getProductsByCategoryName(categoryName, pageNumber, pageSize);
     return ResponseEntity.ok(products);
   }
 }

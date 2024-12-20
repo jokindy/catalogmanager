@@ -25,7 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @TestPropertySource(locations = "/application-test.yml")
-public class ProductUserControllerTest {
+class ProductUserControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
@@ -55,8 +55,11 @@ public class ProductUserControllerTest {
         .perform(get("/api/v1/products/1"))
         .andExpectAll(
             status().isNotFound(),
-            jsonPath("$.message", is("Entity not found")),
-            jsonPath("$.operation", is("GET /api/v1/products/1")));
+            jsonPath("$.timestamp", notNullValue()),
+            jsonPath("$.traceId", notNullValue()),
+            jsonPath("$.faults", hasSize(1)),
+            jsonPath("$.faults[0].message", is("Entity not found")),
+            jsonPath("$.faults[0].reason", is("Wrong id")));
   }
 
   @Test
@@ -65,9 +68,10 @@ public class ProductUserControllerTest {
         .perform(get("/api/v1/products/AA"))
         .andExpectAll(
             status().isBadRequest(),
-            jsonPath("$", hasSize(1)),
-            jsonPath("$[0].message").value("Invalid parameter: id"),
-            jsonPath("$[0].operation").value("GET /api/v1/products/AA"));
+            jsonPath("$.timestamp", notNullValue()),
+            jsonPath("$.traceId", notNullValue()),
+            jsonPath("$.faults", hasSize(1)),
+            jsonPath("$.faults[0].message", is("Invalid parameter: id")));
   }
 
   @Test
@@ -164,12 +168,15 @@ public class ProductUserControllerTest {
         .perform(get("/api/v1/products").param("pageSize", "-2").param("pageNumber", "-9"))
         .andExpectAll(
             status().isBadRequest(),
-            jsonPath("$", hasSize(2)),
+            jsonPath("$.timestamp", notNullValue()),
+            jsonPath("$.traceId", notNullValue()),
+            jsonPath("$.faults", hasSize(2)),
             jsonPath(
-                "$[*].message",
+                "$.faults[*].message",
                 containsInAnyOrder("Invalid parameter: pageSize", "Invalid parameter: pageNumber")),
             jsonPath(
-                "$[*].operation",
-                containsInAnyOrder("GET /api/v1/products", "GET /api/v1/products")));
+                "$.faults[*].reason",
+                containsInAnyOrder(
+                    "Must be greater than or equal to 0", "Must be greater than 0")));
   }
 }

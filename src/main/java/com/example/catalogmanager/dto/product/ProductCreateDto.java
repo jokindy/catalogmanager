@@ -7,17 +7,22 @@ import java.math.BigDecimal;
 
 public class ProductCreateDto {
 
-  @NotNull
-  @Size(min = 3, max = 85)
+  @NotNull(message = "Must not me null")
+  @Size(min = 3, max = 85, message = "Must be between 3 and 85 characters")
   private String name;
 
-  @NotNull
-  @Size(min = 10, max = 85)
+  @NotNull(message = "Must not me null")
+  @Size(min = 3, max = 255, message = "Must be between 3 and 255 characters")
   private String description;
 
-  @NotNull private BigDecimal price;
-  @Positive private int stockQuantity;
-  @NotNull private Long categoryId;
+  @NotNull(message = "Must not me null")
+  private BigDecimal price;
+
+  @Positive(message = "Must be positive")
+  private int stockQuantity;
+
+  @NotNull(message = "Must not me null")
+  private Long categoryId;
 
   public String getName() {
     return name;

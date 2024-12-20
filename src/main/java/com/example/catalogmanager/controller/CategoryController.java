@@ -25,8 +25,11 @@ public class CategoryController {
 
   @GetMapping
   public ResponseEntity<List<CategoryViewDto>> getAllCategories(
-      @PositiveOrZero @RequestParam(defaultValue = "0") int pageNumber,
-      @Positive @RequestParam(defaultValue = "10") int pageSize) {
+      @PositiveOrZero(message = "Must be greater than or equal to 0")
+          @RequestParam(defaultValue = "0")
+          int pageNumber,
+      @Positive(message = "Must be greater than 0") @RequestParam(defaultValue = "10")
+          int pageSize) {
     return ResponseEntity.ok(categoryService.getAllCategories(pageNumber, pageSize));
   }
 
