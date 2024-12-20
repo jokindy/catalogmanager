@@ -19,12 +19,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application-test.yml")
-public class ProductControllerTest {
+//@TestPropertySource(locations = "classpath:application-test.yml")
+class ProductControllerTest {
 
   @Autowired private MockMvc mockMvc;
 
-  @MockBean private CategoryRepository bookRepository;
+  @MockBean private CategoryRepository categoryRepository;
 
   @Test
   @WithMockUser(username = "testuser")
@@ -34,7 +34,7 @@ public class ProductControllerTest {
     category.setDescription("Test description");
     category.setLogoUrl("logourl.jpeg");
 
-    Mockito.when(bookRepository.findById(1L)).thenReturn(Optional.of(category));
+    Mockito.when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
 
     mockMvc
         .perform(get("/api/v1/categories/1"))
