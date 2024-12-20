@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,6 +24,7 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
       new JwtGrantedAuthoritiesConverter();
 
   private final JwtConverterProperties properties;
+  private final Logger log = LoggerFactory.getLogger(JwtConverter.class);
 
   public JwtConverter(JwtConverterProperties properties) {
     this.properties = properties;
@@ -34,6 +37,7 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
                 jwtGrantedAuthoritiesConverter.convert(jwt).stream(),
                 extractResourceRoles(jwt).stream())
             .collect(Collectors.toSet());
+    log.debug("Extracted authorities: {}", authorities);
     return new JwtAuthenticationToken(jwt, authorities, getPrincipalClaimName(jwt));
   }
 
@@ -48,6 +52,8 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
   @SuppressWarnings("unchecked")
   private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
     Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
+    log.debug("Resource access: {}", resourceAccess);
+
     Map<String, Object> resource;
     Collection<String> resourceRoles;
 
@@ -56,6 +62,9 @@ public class JwtConverter implements Converter<Jwt, AbstractAuthenticationToken>
         || (resourceRoles = (Collection<String>) resource.get("roles")) == null) {
       return Set.of();
     }
+
+    log.debug("Roles for resource {}: {}", properties.getResourceId(), resourceRoles);
+
     return resourceRoles.stream()
         .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
         .collect(Collectors.toSet());

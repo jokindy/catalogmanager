@@ -40,3 +40,10 @@ jwt:
     converter:
       resource-id: login-app
       principal-attribute: principal_username
+
+logging:
+  level:
+    com:
+      example:
+        catalogmanager:
+          DEBUG

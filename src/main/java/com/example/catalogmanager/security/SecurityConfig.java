@@ -46,11 +46,11 @@ public class SecurityConfig {
     http.authorizeHttpRequests(
             requests ->
                 requests
-                    .requestMatchers(HttpMethod.POST, "/authors", "/books")
+                    .requestMatchers(HttpMethod.POST, "/api/v1/categories", "/api/v1/products")
                     .hasRole(ADMIN_ROLE)
-                    .requestMatchers(HttpMethod.PUT, "/books")
+                    .requestMatchers(HttpMethod.PUT, "/api/v1/categories", "/api/v1/products")
                     .hasRole(ADMIN_ROLE)
-                    .requestMatchers(HttpMethod.DELETE, "/books/{bookId}")
+                    .requestMatchers(HttpMethod.DELETE, "/api/v1/categories/{id}", "/api/v1/products/{id}")
                     .hasRole(ADMIN_ROLE)
                     .anyRequest()
                     .authenticated())

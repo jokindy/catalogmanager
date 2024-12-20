@@ -2,6 +2,7 @@ package com.example.catalogmanager.dto.category;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.URL;
 
 public class CategoryCreateDto {
   @NotNull
@@ -9,11 +10,12 @@ public class CategoryCreateDto {
   private String name;
 
   @NotNull
-  @Size(min = 3, max = 85)
+  @Size(min = 3, max = 255)
   private String description;
 
   @NotNull
-  @Size(min = 3, max = 85)
+  @Size(min = 3, max = 255)
+  @URL
   private String logoUrl;
 
   public String getName() {
