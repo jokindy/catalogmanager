@@ -9,5 +9,6 @@ import org.mapstruct.Mapper;
 public abstract class ProductMapper {
 
   public abstract ProductViewDto toProductViewDto(Product product);
+
   public abstract Product toEntity(ProductCreateDto productCreateDto);
 }

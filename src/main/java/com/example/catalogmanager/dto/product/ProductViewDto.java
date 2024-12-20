@@ -1,7 +1,6 @@
 package com.example.catalogmanager.dto.product;
 
 import com.example.catalogmanager.dto.CategoryProductDto;
-
 import java.math.BigDecimal;
 
 public class ProductViewDto {

@@ -1,10 +1,8 @@
 package com.example.catalogmanager.service;
 
-import com.example.catalogmanager.domain.Category;
 import com.example.catalogmanager.dto.category.CategoryCreateDto;
 import com.example.catalogmanager.dto.category.CategoryUpdateDto;
 import com.example.catalogmanager.dto.category.CategoryViewDto;
-
 import java.util.List;
 
 public interface CategoryService {
