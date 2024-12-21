@@ -1,5 +1,6 @@
 package com.example.catalogmanager.controller;
 
+import static com.example.catalogmanager.util.CategoryTestDataFactory.createCategoryCreateDto;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -31,10 +32,7 @@ class CategoryAdminControllerTest {
 
   @Test
   void testCreateCategory_Success() throws Exception {
-    CategoryCreateDto categoryDto = new CategoryCreateDto();
-    categoryDto.setName("Test category");
-    categoryDto.setDescription("Test description");
-    categoryDto.setLogoUrl("http://google.com");
+    CategoryCreateDto categoryDto = createCategoryCreateDto();
 
     mockMvc
         .perform(
@@ -43,9 +41,9 @@ class CategoryAdminControllerTest {
                 .contentType(ContentType.APPLICATION_JSON.toString()))
         .andExpectAll(
             status().isOk(),
-            jsonPath("$.name").value("Test category"),
-            jsonPath("$.description").value("Test description"),
-            jsonPath("$.logoUrl").value("http://google.com"));
+            jsonPath("$.name").value("Category 1"),
+            jsonPath("$.description").value("Description for category 1"),
+            jsonPath("$.logoUrl").value("https://category1_logo.jpeg"));
   }
 
   @Test
@@ -116,7 +114,7 @@ class CategoryAdminControllerTest {
     categoryDto.setId(44L);
     categoryDto.setName("New name");
     categoryDto.setDescription("New description");
-    categoryDto.setLogoUrl("http://new-logo.com");
+    categoryDto.setLogoUrl("https://new-logo.com");
 
     mockMvc
         .perform(
@@ -140,7 +138,7 @@ class CategoryAdminControllerTest {
     categoryDto.setId(categoryId);
     categoryDto.setName("New name");
     categoryDto.setDescription("New description");
-    categoryDto.setLogoUrl("http://new-logo.com");
+    categoryDto.setLogoUrl("https://new-logo.com");
 
     mockMvc
         .perform(
@@ -151,14 +149,14 @@ class CategoryAdminControllerTest {
             status().isOk(),
             jsonPath("$.name").value("New name"),
             jsonPath("$.description").value("New description"),
-            jsonPath("$.logoUrl").value("http://new-logo.com"));
+            jsonPath("$.logoUrl").value("https://new-logo.com"));
   }
 
   private Long prepareCategoryForUpdate() {
     Category category = new Category();
     category.setName("Test category");
     category.setDescription("Test description");
-    category.setLogoUrl("http://google.com");
+    category.setLogoUrl("https://google.com");
 
     return categoryRepository.save(category).getId();
   }

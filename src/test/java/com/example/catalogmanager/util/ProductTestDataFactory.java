@@ -2,12 +2,14 @@ package com.example.catalogmanager.util;
 
 import com.example.catalogmanager.domain.Category;
 import com.example.catalogmanager.domain.Product;
+import com.example.catalogmanager.dto.product.ProductCreateDto;
 import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
-public class ProductFactory {
+public class ProductTestDataFactory {
+
   public static Page<Product> createProductsPage() {
     Product product1 = new Product();
     product1.setId(1L);
@@ -110,9 +112,21 @@ public class ProductFactory {
 
     category.setName("Test category name");
     category.setDescription("Test category description");
+    category.setLogoUrl("https://logourl.jpeg");
 
     product.setCategory(category);
 
     return product;
+  }
+
+  public static ProductCreateDto createProductCreateDto() {
+    ProductCreateDto productCreateDto = new ProductCreateDto();
+
+    productCreateDto.setName("Test product name");
+    productCreateDto.setDescription("Test product description");
+    productCreateDto.setPrice(BigDecimal.valueOf(9.99));
+    productCreateDto.setStockQuantity(30);
+
+    return productCreateDto;
   }
 }

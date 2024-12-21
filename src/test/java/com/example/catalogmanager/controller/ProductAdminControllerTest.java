@@ -1,5 +1,7 @@
 package com.example.catalogmanager.controller;
 
+import static com.example.catalogmanager.util.CategoryTestDataFactory.createCategory;
+import static com.example.catalogmanager.util.ProductTestDataFactory.createProductCreateDto;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -34,29 +36,20 @@ class ProductAdminControllerTest {
   @Autowired private ObjectMapper objectMapper;
   @Autowired private MockMvc mockMvc;
   @Autowired private CategoryRepository categoryRepository;
+  private Category category;
 
   @BeforeEach
   public void beforeEach() {
-    Category category = new Category();
-
-    category.setName("Test category name");
-    category.setDescription("Test category description");
-    category.setLogoUrl("http://google.com");
+    category = createCategory();
 
     categoryRepository.save(category);
-    categoryRepository.flush();
   }
 
   @Test
   @Order(1)
   void testCreateProduct_Success() throws Exception {
-    ProductCreateDto productCreateDto = new ProductCreateDto();
-
-    productCreateDto.setName("Test product name");
-    productCreateDto.setDescription("Test product description");
-    productCreateDto.setPrice(BigDecimal.valueOf(9.99));
-    productCreateDto.setStockQuantity(43);
-    productCreateDto.setCategoryId(1L);
+    ProductCreateDto productCreateDto = createProductCreateDto();
+    productCreateDto.setCategoryId(category.getId());
 
     mockMvc
         .perform(
@@ -68,9 +61,9 @@ class ProductAdminControllerTest {
             jsonPath("$.name", is("Test product name")),
             jsonPath("$.description", is("Test product description")),
             jsonPath("$.price", is(9.99)),
-            jsonPath("$.stockQuantity", is(43)),
-            jsonPath("$.category.name", is("Test category name")),
-            jsonPath("$.category.description", is("Test category description")));
+            jsonPath("$.stockQuantity", is(30)),
+            jsonPath("$.category.name", is("Category 1")),
+            jsonPath("$.category.description", is("Description for category 1")));
   }
 
   @Test
@@ -206,11 +199,11 @@ class ProductAdminControllerTest {
   }
 
   private Long prepareCategoryForUpdate() {
-    Category category = new Category();
-    category.setName("New category");
-    category.setDescription("New description");
-    category.setLogoUrl("http://google.com");
+    Category updatedCategory = new Category();
+    updatedCategory.setName("New category");
+    updatedCategory.setDescription("New description");
+    updatedCategory.setLogoUrl("https://google.com");
 
-    return categoryRepository.save(category).getId();
+    return categoryRepository.save(updatedCategory).getId();
   }
 }

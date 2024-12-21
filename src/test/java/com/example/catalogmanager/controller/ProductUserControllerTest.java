@@ -1,9 +1,9 @@
 package com.example.catalogmanager.controller;
 
-import static com.example.catalogmanager.util.ProductFactory.createProduct;
-import static com.example.catalogmanager.util.ProductFactory.createProductsPage;
-import static com.example.catalogmanager.util.ProductFactory.createSameCategoryProductsPage;
-import static com.example.catalogmanager.util.ProductFactory.createSameNameProductsPage;
+import static com.example.catalogmanager.util.ProductTestDataFactory.createProduct;
+import static com.example.catalogmanager.util.ProductTestDataFactory.createProductsPage;
+import static com.example.catalogmanager.util.ProductTestDataFactory.createSameCategoryProductsPage;
+import static com.example.catalogmanager.util.ProductTestDataFactory.createSameNameProductsPage;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;

@@ -1,5 +1,7 @@
 package com.example.catalogmanager.controller;
 
+import static com.example.catalogmanager.util.CategoryTestDataFactory.createCategory;
+import static com.example.catalogmanager.util.CategoryTestDataFactory.createCategoryPage;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -12,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.catalogmanager.domain.Category;
 import com.example.catalogmanager.repository.CategoryRepository;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,10 +35,7 @@ class CategoryUserControllerTest {
 
   @Test
   void testGetCategoryById_Success() throws Exception {
-    Category category = new Category();
-    category.setName("Test category");
-    category.setDescription("Test description");
-    category.setLogoUrl("logourl.jpeg");
+    Category category = createCategory();
 
     Mockito.when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
 
@@ -46,9 +43,9 @@ class CategoryUserControllerTest {
         .perform(get("/api/v1/categories/1"))
         .andExpectAll(
             status().isOk(),
-            jsonPath("$.name").value("Test category"),
-            jsonPath("$.description").value("Test description"),
-            jsonPath("$.logoUrl").value("logourl.jpeg"));
+            jsonPath("$.name").value("Category 1"),
+            jsonPath("$.description").value("Description for category 1"),
+            jsonPath("$.logoUrl").value("https://category1_logo.jpeg"));
   }
 
   @Test
@@ -125,27 +122,5 @@ class CategoryUserControllerTest {
                 "$.faults[*].reason",
                 containsInAnyOrder(
                     "Must be greater than or equal to 0", "Must be greater than 0")));
-  }
-
-  private Page<Category> createCategoryPage() {
-    Category category1 = new Category();
-    category1.setId(1L);
-    category1.setName("Category 1");
-    category1.setDescription("Description for category 1");
-    category1.setLogoUrl("category1_logo.jpeg");
-
-    Category category2 = new Category();
-    category2.setId(2L);
-    category2.setName("Category 2");
-    category2.setDescription("Description for category 2");
-    category2.setLogoUrl("category2_logo.jpeg");
-
-    Category category3 = new Category();
-    category3.setId(3L);
-    category3.setName("Category 3");
-    category3.setDescription("Description for category 3");
-    category3.setLogoUrl("category3_logo.jpeg");
-
-    return new PageImpl<>(List.of(category1, category2, category3));
   }
 }
