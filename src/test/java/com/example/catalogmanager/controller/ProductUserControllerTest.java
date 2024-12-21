@@ -1,7 +1,13 @@
 package com.example.catalogmanager.controller;
 
-import static com.example.catalogmanager.util.ProductFactory.*;
-import static org.hamcrest.Matchers.*;
+import static com.example.catalogmanager.util.ProductFactory.createProduct;
+import static com.example.catalogmanager.util.ProductFactory.createProductsPage;
+import static com.example.catalogmanager.util.ProductFactory.createSameCategoryProductsPage;
+import static com.example.catalogmanager.util.ProductFactory.createSameNameProductsPage;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,7 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource(locations = "/application-test.yml")
+@TestPropertySource(locations = "/application.yml")
 class ProductUserControllerTest {
 
   @Autowired private MockMvc mockMvc;

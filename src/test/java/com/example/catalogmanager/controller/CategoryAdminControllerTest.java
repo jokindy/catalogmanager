@@ -1,6 +1,9 @@
 package com.example.catalogmanager.controller;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -16,12 +19,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
-@TestPropertySource(locations = "/application-test.yml")
 class CategoryAdminControllerTest {
 
   @Autowired private ObjectMapper objectMapper;
@@ -60,19 +61,21 @@ class CategoryAdminControllerTest {
                 .contentType(ContentType.APPLICATION_JSON.toString()))
         .andExpectAll(
             status().isBadRequest(),
-            jsonPath("$", hasSize(3)),
+            jsonPath("$.timestamp", notNullValue()),
+            jsonPath("$.traceId", notNullValue()),
+            jsonPath("$.faults", hasSize(3)),
             jsonPath(
-                "$[*].message",
+                "$.faults[*].message",
                 containsInAnyOrder(
-                    "Invalid parameter: logoUrl",
+                    "Invalid parameter: name",
                     "Invalid parameter: description",
-                    "Invalid parameter: name")),
+                    "Invalid parameter: logoUrl")),
             jsonPath(
-                "$[*].operation",
+                "$.faults[*].reason",
                 containsInAnyOrder(
-                    "POST /api/v1/categories",
-                    "POST /api/v1/categories",
-                    "POST /api/v1/categories")));
+                    "Must not me null",
+                    "Must be between 3 and 85 characters",
+                    "Must be a valid url")));
   }
 
   @Test
@@ -88,21 +91,23 @@ class CategoryAdminControllerTest {
                 .contentType(ContentType.APPLICATION_JSON.toString()))
         .andExpectAll(
             status().isBadRequest(),
-            jsonPath("$", hasSize(4)),
+            jsonPath("$.timestamp", notNullValue()),
+            jsonPath("$.traceId", notNullValue()),
+            jsonPath("$.faults", hasSize(4)),
             jsonPath(
-                "$[*].message",
+                "$.faults[*].message",
                 containsInAnyOrder(
                     "Invalid parameter: id",
-                    "Invalid parameter: logoUrl",
+                    "Invalid parameter: name",
                     "Invalid parameter: description",
-                    "Invalid parameter: name")),
+                    "Invalid parameter: logoUrl")),
             jsonPath(
-                "$[*].operation",
+                "$.faults[*].reason",
                 containsInAnyOrder(
-                    "PUT /api/v1/categories",
-                    "PUT /api/v1/categories",
-                    "PUT /api/v1/categories",
-                    "PUT /api/v1/categories")));
+                    "Must not me null",
+                    "Must not me null",
+                    "Must be between 3 and 85 characters",
+                    "Must be a valid url")));
   }
 
   @Test
@@ -120,8 +125,11 @@ class CategoryAdminControllerTest {
                 .contentType(ContentType.APPLICATION_JSON.toString()))
         .andExpectAll(
             status().isNotFound(),
-            jsonPath("$.message", is("Entity not found")),
-            jsonPath("$.operation", is("PUT /api/v1/categories")));
+            jsonPath("$.timestamp", notNullValue()),
+            jsonPath("$.traceId", notNullValue()),
+            jsonPath("$.faults", hasSize(1)),
+            jsonPath("$.faults[0].message", is("Entity not found")),
+            jsonPath("$.faults[0].reason", is("Wrong id")));
   }
 
   @Test

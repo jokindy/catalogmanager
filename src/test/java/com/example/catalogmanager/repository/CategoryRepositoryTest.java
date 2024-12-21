@@ -31,9 +31,9 @@ class CategoryRepositoryTest {
   @Test
   void saveCategory() {
     Category category = new Category();
-    category.setName("Test category");
-    category.setDescription("Test description");
-    category.setLogoUrl("logourl.jpeg");
+    category.setName("Test catewewewgory");
+    category.setDescription("Test descrwewewiption");
+    category.setLogoUrl("logourl.jpweweweeg");
 
     categoryRepository.save(category);
 

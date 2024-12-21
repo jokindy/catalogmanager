@@ -16,6 +16,7 @@ public class ProductCreateDto {
   private String description;
 
   @NotNull(message = "Must not me null")
+  @Positive(message = "Must be positive")
   private BigDecimal price;
 
   @Positive(message = "Must be positive")
